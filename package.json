@@ -1,0 +1,23 @@
+{
+  "name": "paperless-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Remote MCP server for Paperless-ngx, deployed on Cloudflare Workers behind an MCP server portal.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "start": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "cf-typegen": "wrangler types",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "agents": "^0.17.1",
+    "@modelcontextprotocol/sdk": "^1.20.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.17",
+    "typescript": "^5.8.3",
+    "wrangler": "^4.105.0"
+  }
+}

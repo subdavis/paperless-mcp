@@ -1,0 +1,6 @@
+# Copy this file to `.dev.vars` for local `wrangler dev` runs.
+# In production these are set with `wrangler secret put <NAME>` instead.
+
+PAPERLESS_URL=https://paperless.example.com
+PAPERLESS_TOKEN=your-paperless-ngx-api-token
+MCP_AUTH_TOKEN=a-long-random-shared-secret

@@ -1,0 +1,32 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "paperless-mcp",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-03-10",
+  "compatibility_flags": ["nodejs_compat"],
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["PaperlessMCP"]
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "class_name": "PaperlessMCP",
+        "name": "MCP_OBJECT"
+      }
+    ]
+  },
+  "observability": {
+    "enabled": true
+  }
+  // Secrets (set via `wrangler secret put <NAME>`, not stored here):
+  //   PAPERLESS_URL    - base URL of your paperless-ngx instance, e.g. https://paperless.example.com
+  //   PAPERLESS_TOKEN  - paperless-ngx API token (Django REST "Token" auth)
+  //   MCP_AUTH_TOKEN   - shared secret this Worker requires as `Authorization: Bearer <token>`
+}
