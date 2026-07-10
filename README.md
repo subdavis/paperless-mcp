@@ -4,6 +4,8 @@
 > This is 100% vibecode, but it works!
 > The deploy guide at [./DEPLOY.md](./DEPLOY.md) is reliable as of July 2026
 
+![paperless-mcp](./paperless-mcp.png)
+
 A remote [MCP](https://modelcontextprotocol.io) server for [paperless-ngx](https://docs.paperless-ngx.com/),
 deployed on [Cloudflare Workers](https://developers.cloudflare.com/workers/) so it can be registered
 behind a [Cloudflare MCP server portal](https://developers.cloudflare.com/cloudflare-one/access-controls/ai-controls/mcp-portals/)
