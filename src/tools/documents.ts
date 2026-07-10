@@ -2,7 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import type { PaperlessAPI } from "../api/PaperlessAPI";
-import { errorResult, jsonResult } from "./util";
+import { errorResult, jsonResult, readOnlyAnnotations, writeAnnotations } from "./util";
 
 export function registerDocumentTools(server: McpServer, api: PaperlessAPI) {
   server.tool(
@@ -54,6 +54,7 @@ export function registerDocumentTools(server: McpServer, api: PaperlessAPI) {
       pages: z.string().optional().describe("Page specification for delete_pages method. Format: '1,3,5-7' to delete pages 1, 3, and 5 through 7."),
       degrees: z.number().optional().describe("Rotation angle in degrees when method is 'rotate'. Use 90, 180, or 270 for standard rotations."),
     },
+    writeAnnotations(true),
     async (args): Promise<CallToolResult> => {
       try {
         const { documents, method, ...parameters } = args;
@@ -80,6 +81,7 @@ export function registerDocumentTools(server: McpServer, api: PaperlessAPI) {
       archive_serial_number: z.string().optional().describe("Custom archive number for document organization and reference. Useful for maintaining external filing systems."),
       custom_fields: z.array(z.number()).optional().describe("Array of custom field IDs to associate with this document. Custom fields store additional metadata."),
     },
+    writeAnnotations(false),
     async (args): Promise<CallToolResult> => {
       try {
         const binaryData = Buffer.from(args.file, "base64");
@@ -100,6 +102,7 @@ export function registerDocumentTools(server: McpServer, api: PaperlessAPI) {
     {
       id: z.number().describe("Unique document ID. Get this from search_documents results. Returns full document metadata, content preview, and associated tags/correspondent/type."),
     },
+    readOnlyAnnotations(),
     async (args): Promise<CallToolResult> => {
       try {
         const result = await api.getDocument(args.id);
@@ -118,6 +121,7 @@ export function registerDocumentTools(server: McpServer, api: PaperlessAPI) {
       page: z.number().optional().describe("Page number for pagination (starts at 1). Use to browse through large result sets without hitting token limits."),
       page_size: z.number().optional().describe("Number of documents per page (default 25, max 100). Smaller page sizes help avoid token limits when many documents match."),
     },
+    readOnlyAnnotations(),
     async (args): Promise<CallToolResult> => {
       try {
         const result = await api.searchDocuments(args.query, args.page, args.page_size);
@@ -135,6 +139,7 @@ export function registerDocumentTools(server: McpServer, api: PaperlessAPI) {
       id: z.number().describe("Document ID to download. Get this from search_documents or get_document results."),
       original: z.boolean().optional().describe("Whether to download the original uploaded file (true) or the processed/archived version (false, default). Original files preserve exact formatting but may not include OCR improvements."),
     },
+    readOnlyAnnotations(),
     async (args): Promise<CallToolResult> => {
       try {
         const response = await api.downloadDocument(args.id, args.original);

@@ -1,4 +1,18 @@
-import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import type { CallToolResult, ToolAnnotations } from "@modelcontextprotocol/sdk/types.js";
+
+/**
+ * Tool annotations (readOnlyHint, and destructiveHint/openWorldHint for writes) — some MCP
+ * clients (e.g. ChatGPT's developer mode connectors) treat missing/null hints as a validation
+ * error and will refuse to list any tools at all, not just the offending one.
+ */
+export function readOnlyAnnotations(): ToolAnnotations {
+  return { readOnlyHint: true };
+}
+
+/** `destructive` = the operation can irreversibly delete or overwrite data (not just add to it). */
+export function writeAnnotations(destructive: boolean): ToolAnnotations {
+  return { readOnlyHint: false, destructiveHint: destructive, openWorldHint: false };
+}
 
 /** Wrap a plain JS value (typically a parsed JSON API response) as a text tool result. */
 export function jsonResult(value: unknown): CallToolResult {

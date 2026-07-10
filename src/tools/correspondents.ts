@@ -2,7 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import type { PaperlessAPI } from "../api/PaperlessAPI";
-import { errorResult, jsonResult } from "./util";
+import { errorResult, jsonResult, readOnlyAnnotations, writeAnnotations } from "./util";
 
 export function registerCorrespondentTools(server: McpServer, api: PaperlessAPI) {
   server.tool(
@@ -12,6 +12,7 @@ export function registerCorrespondentTools(server: McpServer, api: PaperlessAPI)
       page: z.number().optional().describe("Page number for pagination (starts at 1). Use to browse beyond the first page of correspondents."),
       page_size: z.number().optional().describe("Number of correspondents per page (paperless-ngx default is 25, max 100)."),
     },
+    readOnlyAnnotations(),
     async (args): Promise<CallToolResult> => {
       try {
         return jsonResult(await api.getCorrespondents(args.page, args.page_size));
@@ -31,6 +32,7 @@ export function registerCorrespondentTools(server: McpServer, api: PaperlessAPI)
         .enum(["any", "all", "exact", "regular expression", "fuzzy"])
         .optional().describe("How to match text patterns: 'any'=any word matches, 'all'=all words must match, 'exact'=exact phrase match, 'regular expression'=use regex patterns, 'fuzzy'=approximate matching with typos. Default is 'any'."),
     },
+    writeAnnotations(false),
     async (args): Promise<CallToolResult> => {
       try {
         return jsonResult(await api.createCorrespondent(args));
@@ -61,6 +63,7 @@ export function registerCorrespondentTools(server: McpServer, api: PaperlessAPI)
         .optional().describe("Permission settings when operation is 'set_permissions'. Defines who can view/assign and modify these correspondents."),
       merge: z.boolean().optional().describe("Whether to merge with existing permissions (true) or replace them entirely (false). Default is false."),
     },
+    writeAnnotations(true),
     async (args): Promise<CallToolResult> => {
       try {
         const result = await api.bulkEditObjects(

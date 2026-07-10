@@ -2,7 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import type { PaperlessAPI } from "../api/PaperlessAPI";
-import { errorResult, jsonResult } from "./util";
+import { errorResult, jsonResult, readOnlyAnnotations, writeAnnotations } from "./util";
 
 export function registerTagTools(server: McpServer, api: PaperlessAPI) {
   server.tool(
@@ -12,6 +12,7 @@ export function registerTagTools(server: McpServer, api: PaperlessAPI) {
       page: z.number().optional().describe("Page number for pagination (starts at 1). Use to browse beyond the first page of tags."),
       page_size: z.number().optional().describe("Number of tags per page (paperless-ngx default is 25, max 100)."),
     },
+    readOnlyAnnotations(),
     async (args): Promise<CallToolResult> => {
       try {
         return jsonResult(await api.getTags(args.page, args.page_size));
@@ -33,6 +34,7 @@ export function registerTagTools(server: McpServer, api: PaperlessAPI) {
       match: z.string().optional().describe("Text pattern to automatically assign this tag to matching documents. Use keywords, phrases, or regular expressions depending on matching_algorithm."),
       matching_algorithm: z.number().int().min(0).max(4).optional().describe("How to match text patterns: 0=any word, 1=all words, 2=exact phrase, 3=regular expression, 4=fuzzy matching. Default is 0 (any word)."),
     },
+    writeAnnotations(false),
     async (args): Promise<CallToolResult> => {
       try {
         return jsonResult(await api.createTag(args));
@@ -55,6 +57,7 @@ export function registerTagTools(server: McpServer, api: PaperlessAPI) {
       match: z.string().optional().describe("Text pattern for automatic tag assignment. Empty string removes auto-matching. Use keywords, phrases, or regex depending on matching_algorithm."),
       matching_algorithm: z.number().int().min(0).max(4).optional().describe("Algorithm for pattern matching: 0=any word, 1=all words, 2=exact phrase, 3=regular expression, 4=fuzzy matching."),
     },
+    writeAnnotations(false),
     async (args): Promise<CallToolResult> => {
       try {
         return jsonResult(await api.updateTag(args.id, args));
@@ -70,6 +73,7 @@ export function registerTagTools(server: McpServer, api: PaperlessAPI) {
     {
       id: z.number().describe("ID of the tag to permanently delete. This will remove the tag from all documents that currently use it. Use list_tags to find tag IDs."),
     },
+    writeAnnotations(true),
     async (args): Promise<CallToolResult> => {
       try {
         return jsonResult(await api.deleteTag(args.id));
@@ -100,6 +104,7 @@ export function registerTagTools(server: McpServer, api: PaperlessAPI) {
         .optional().describe("Permission settings when operation is 'set_permissions'. Defines who can view/use and modify these tags."),
       merge: z.boolean().optional().describe("Whether to merge with existing permissions (true) or replace them entirely (false). Default is false."),
     },
+    writeAnnotations(true),
     async (args): Promise<CallToolResult> => {
       try {
         const result = await api.bulkEditObjects(
