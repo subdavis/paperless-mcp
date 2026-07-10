@@ -1,7 +1,8 @@
 # paperless-mcp (Cloudflare Workers)
 
 > [!IMPORTANT]
-> This is 100% vibecode. It also works. The deploy guide at ./DEPLOY.md is reliable as of July 2026
+> This is 100% vibecode, but it works!
+> The deploy guide at [./DEPLOY.md](./DEPLOY.md) is reliable as of July 2026
 
 A remote [MCP](https://modelcontextprotocol.io) server for [paperless-ngx](https://docs.paperless-ngx.com/),
 deployed on [Cloudflare Workers](https://developers.cloudflare.com/workers/) so it can be registered
